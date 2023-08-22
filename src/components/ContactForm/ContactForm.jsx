@@ -1,31 +1,43 @@
-import React, { Component } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import css from "./ContactForm.module.css";
 
-export class ContactForm extends Component {
-    state = {
-        name: '',
-        number: '',  
+export const ContactForm = ({ onSubmit }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const handleChange = event => {
+    const target = event.currentTarget.name;
+    switch (target) {
+      case 'name':
+        setName(event.currentTarget.value);
+        break;
+
+      case 'number':
+        setNumber(event.currentTarget.value);
+        break;
+
+      default:
+        console.log('Something wrong');
+        break;
     }
+  };
 
+  const handleSubmit = event => {
+    event.preventDefault();
 
-handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({
-        [name]: value,
-    });
-};
-handleSubmit = e => {
-    e.preventDefault();
-    const { onAddContact } = this.props;
-    onAddContact(this.state);
-    this.setState({ name: '', number: '' });
-};
-render() {
-    const { name, number } = this.state;
+    onSubmit({ name: name, number: number });
+    reset();
+  };
+
+  const reset = () => {
+    setName('');
+    setNumber('');
+  };
+
 
     return(
-     <form onSubmit={this.handleSubmit} className={css.form}>
+     <form onSubmit={handleSubmit} className={css.form}>
         <label className={css.subTitle}>
           Name
           <input
@@ -37,7 +49,7 @@ render() {
           For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             placeholder="Enter name"
             value={name}
-            onChange={this.handleChange}
+            onChange={handleChange}
           />
         </label>
 
@@ -51,7 +63,7 @@ render() {
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             placeholder="Enter your number"
             value={number}
-                onChange={this.handleChange}
+                onChange={handleChange}
              required
           />
         </label>
@@ -62,8 +74,9 @@ render() {
       </form>
     );
   }
-}
+
 
 ContactForm.propTypes = {
-    onAddContact: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
+
